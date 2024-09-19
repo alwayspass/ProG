@@ -78,6 +78,11 @@ class HeavyPrompt(LightPrompt):
 
         re_graph_list = []
         for g in Batch.to_data_list(graph_batch):
+
+            input_dim = g.x.size(1)
+            if input_dim < 1433:
+              padding = torch.zeros(g.x.size(0), 1433 - input_dim,device = g.x.device)
+              g.x = torch.cat([g.x, padding], dim=1)
             g_edge_index = g.edge_index + token_num
             
             cross_dot = torch.mm(pg.x, torch.transpose(g.x, 0, 1))
