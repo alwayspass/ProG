@@ -9,6 +9,9 @@ import random
 import numpy as np
 import os
 import pandas as pd
+import time
+
+start_time = time.time()
 
 def load_induced_graph(dataset_name, data, device):
 
@@ -16,7 +19,7 @@ def load_induced_graph(dataset_name, data, device):
     if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
-    file_path = folder_path + '/induced_graph_min100_max300.pkl'
+    file_path = folder_path + '/induced_graph_min0_max300.pkl'
     if os.path.exists(file_path):
             with open(file_path, 'rb') as f:
                 print('loading induced graph...')
@@ -24,7 +27,7 @@ def load_induced_graph(dataset_name, data, device):
                 print('Done!!!')
     else:
         print('Begin split_induced_graphs.')
-        split_induced_graphs(data, folder_path, device, smallest_size=100, largest_size=300)
+        split_induced_graphs(data, folder_path, device, smallest_size=0, largest_size=300)
         with open(file_path, 'rb') as f:
             graphs_list = pickle.load(f)
     graphs_list = [graph.to(device) for graph in graphs_list]
@@ -68,11 +71,15 @@ pre_train_type = tasker.pre_train_type
 
 _, test_acc, std_test_acc, f1, std_f1, roc, std_roc, _, _= tasker.run()
   
+
+end_time = time.time()
+training_time = end_time - start_time
+
 print("Final Accuracy {:.4f}±{:.4f}(std)".format(test_acc, std_test_acc)) 
 print("Final F1 {:.4f}±{:.4f}(std)".format(f1,std_f1)) 
 print("Final AUROC {:.4f}±{:.4f}(std)".format(roc, std_roc)) 
 
-
+print("training time {:.4f}".format(training_time))
 
 
 
