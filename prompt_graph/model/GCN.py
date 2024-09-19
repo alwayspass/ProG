@@ -61,6 +61,10 @@ class GCN(torch.nn.Module):
       
 
     def forward(self, x, edge_index, batch = None, prompt = None, prompt_type = None):
+        if x.size(1) < 1433:
+          padding = torch.zeros(x.size(0), 1433 - x.size(1), device = x.device)
+          x = torch.cat([x, padding], dim=1)
+          print(f"Data shape after padding: {x.shape}")
         h_list = [x]
         for idx, conv in enumerate(self.conv_layers[0:-1]):
             x = conv(x, edge_index)
