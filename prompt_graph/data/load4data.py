@@ -164,10 +164,21 @@ def load4graph(dataset_name, shot_num= 10, num_parts=None, pretrained=False):
 def load4node(dataname):
     print(dataname)
     if dataname in ['PubMed', 'CiteSeer', 'Cora']:
+        # 加载 Planetoid 数据集
         dataset = Planetoid(root='data/Planetoid', name=dataname, transform=NormalizeFeatures())
         data = dataset[0]
+        
+        # 获取输入维度和输出维度
         input_dim = dataset.num_features
         out_dim = dataset.num_classes
+
+        if input_dim < target_dim:
+          padding = torch.zeros(data.x.size(0), target_dim - input_dim)
+          data.x = torch.cat([data.x, padding], dim=1)
+
+          input_dim = data.x.size(1)
+          print(input_dim)
+          print(data.x.shape)
     elif dataname in ['Computers', 'Photo']:
         dataset = Amazon(root='data/amazon', name=dataname)
         data = dataset[0]
